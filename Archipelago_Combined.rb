@@ -1,6 +1,15 @@
 #--------------------------------------------------------------------------
 # * Add "Ruby" directory to load path and import archipelago_rb
 #--------------------------------------------------------------------------
+    class << Dir
+        alias bs2r_dir_mkdir mkdir
+        def mkdir(path, *rest)
+            parts = path.to_s.split(/([\/\\])/)
+            parts[-1] = parts[-1].gsub(/[:*?"<>|]/, "_") unless parts.empty?
+            bs2r_dir_mkdir(parts.join, *rest)
+        end
+    end
+
     ruby_directory = File.join(Dir.pwd, "Ruby")
     is_mac = defined?(System) && System.respond_to?(:is_mac?) && System.is_mac?
     $:.push(ruby_directory) unless is_mac
@@ -107,6 +116,7 @@
         "Herb Flask (M)",
         "Bloody Key",
         "Lamp Spark",
+        "Black Rabbit Ring",
     ]
 
     ringlink_enabled = false
@@ -787,7 +797,7 @@ module BS2Randomizer
         [74, 6] => ['Covenant: Capitellar', 'SF: Covenant:  Caterpillar Shisha'],
         [27, 3] => ['Covenant: Mock Turtle', 'BoG: Covenant: Mock Turtle'],
         [125, 10] => ['Covenant: Walrus', "Oysters' Rotted Sea: Covenant: Walrus"],
-        [137, 7] => ['Covenant: Queen of Hearts', 'Garden of the Heart: Covenant: Queen of Hearts'],
+        [137, 7] => ['Covenant: Queen of Hearts', 'Red Castle Frissel: Covenant: Queen of Hearts'],
         [156, 25] => ['Covenant: Hatta', 'Endless Tea Party: Covenant: Hatta'],
         [45, 12] => ['Covenant: Maid Victoria', 'ASH: Covenant: Maid Victoria'],
         [169, 8] => ['Covenant: Best Girl Prickett', 'QL: Covenant: Best Girl Prickett'],
@@ -803,6 +813,8 @@ module BS2Randomizer
         ArchipelagoLocations.send_check(location_name)
     end
 
+    #--------------------------------------------------------------------
+    # ** Locked-door transfer checks
     #--------------------------------------------------------------------
     # ** Boss arena maps
     #--------------------------------------------------------------------
@@ -844,6 +856,7 @@ module BS2Randomizer
 
     def self.check_locked_door_transfer_trigger(interpreter)
         key = [map_id(interpreter), interpreter.instance_variable_get(:@event_id)]
+        puts "[Archipelago_Combined][DEBUG] Transfer Player fired: map_id=#{key[0]}, event_id=#{key[1]}"
         entry = LOCKED_DOOR_TRANSFER_TRIGGERS[key]
         return unless entry
         return if entry[:requires_switch] && !(defined?($game_switches) && $game_switches && $game_switches[entry[:requires_switch]])
@@ -884,7 +897,7 @@ module BS2Randomizer
         192 => [['Soul of the Old Knight', 'SF: Soul of the Old Knight'], ['Great Sword', 'SF: Great Sword']],
         195 => [["Soul of the Giant's Home", "MV: Soul of the Giant's Home"]],
         214 => [['Soul of the Slave Emperor', 'QL: Soul of the Slave Emperor']],
-        218 => [['Soul of the Jubjub', 'SCT: Soul of the Jubjub']],
+        218 => [['Soul of the Jubjub', 'SCT: Soul of the Jubjub'], ['Gear of Madness', 'SCT: Gear of Madness']],
         220 => [['Soul of the Jabberwock', 'CR: Soul of the Jabberwock']],
         373 => [['Soul of the Jabberwock', 'CR: Soul of the Jabberwock']],
         222 => [['Soul of Queen of Torture Tools', 'PoBT: Soul of Queen of Torture Tools'], ['Sorcery [Meteor Shower]', 'PoBT: Sorcery [Meteor Shower]']],
@@ -1036,7 +1049,6 @@ module BattleManager
         def process_victory
             troop_id = $game_troop.instance_variable_get(:@troop_id) if defined?($game_troop) && $game_troop
             BS2Randomizer.grant_boss_souls_for_troop(troop_id) if troop_id
-
             if defined?($ap_pending_arena_soul_troop_id) && $ap_pending_arena_soul_troop_id
                 BS2Randomizer.grant_boss_souls_for_troop($ap_pending_arena_soul_troop_id)
                 $ap_pending_arena_soul_troop_id = nil
@@ -1065,6 +1077,24 @@ class Game_Event < Game_Character
             return
         end
         bs2ap_event_start
+    end
+
+    EVENT_REFRESH_SWITCH_SUPPRESSION = {
+        [53, 11] => 178,
+        [130, 77] => 59,
+    }
+
+    alias bs2r_event_refresh refresh
+    def refresh
+        switch_id = EVENT_REFRESH_SWITCH_SUPPRESSION[[$game_map ? $game_map.map_id : nil, @id]]
+        if switch_id && $game_switches[switch_id]
+            original_value = $game_switches[switch_id]
+            $game_switches[switch_id] = false
+            bs2r_event_refresh
+            $game_switches[switch_id] = original_value
+        else
+            bs2r_event_refresh
+        end
     end
 end
 
@@ -1267,7 +1297,6 @@ class Game_Interpreter
     }
     AP_CLIENT_STATUS_GOAL = 30
 
-
     ENDING_G_TRIGGER = {map_id: 187, event_id: 6, switch_id: 513}
 
     def command_121
@@ -1276,7 +1305,7 @@ class Game_Interpreter
            instance_variable_get(:@event_id) == trigger[:event_id] &&
            @params[0] <= trigger[:switch_id] && trigger[:switch_id] <= @params[1] &&
            @params[2] == 0
-            ArchipelagoLocations.send_check("Crash Chamber: Ending G Achieved")
+            ArchipelagoLocations.send_check("Library Dream: Ending G Achieved")
         end
 
         triggers = ENDING_TRIGGERS[$ap_goal] || []
@@ -1294,7 +1323,6 @@ class Game_Interpreter
     end
 
     def command_201
-
         BS2Randomizer.check_locked_door_transfer_trigger(self)
 
         if !BS2Randomizer.intro_map?(self) && BS2Randomizer.enabled?("room_transition_randomization") && @params[0] == 0
@@ -1314,7 +1342,6 @@ class Game_Interpreter
 
     def command_301
         if !BS2Randomizer.intro_map?(self) && BS2Randomizer.enabled?("enemy_randomization")
-
             if BS2Randomizer::BOSS_ARENA_MAP_IDS.include?(BS2Randomizer.map_id(self))
                 original_id = BS2Randomizer.original_troop_id(self)
                 $ap_pending_arena_soul_troop_id =
@@ -1652,7 +1679,6 @@ end
             $game_troop         = contents[:troop]
             $game_map           = contents[:map]
             $game_player        = contents[:player]
-
             auto_meet_red_hood = defined?($ap_auto_meet_red_hood) ? $ap_auto_meet_red_hood : true
             if auto_meet_red_hood
                 $game_switches[14] = true
