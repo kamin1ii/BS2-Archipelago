@@ -1,17 +1,38 @@
 #--------------------------------------------------------------------------
 # * Add "Ruby" directory to load path and import archipelago_rb
 #--------------------------------------------------------------------------
+    def bs2r_sanitize_windows_path(path)
+        return path unless path.is_a?(String)
+        parts = path.split(/([\/\\])/)
+        parts.each_with_index do |part, idx|
+            next if idx == 0
+            next if part == "/" || part == "\\"
+            parts[idx] = part.gsub(/[:*?"<>|]/, "_")
+        end
+        parts.join
+    end
+
     class << Dir
         alias bs2r_dir_mkdir mkdir
         def mkdir(path, *rest)
-            parts = path.to_s.split(/([\/\\])/)
-            parts[-1] = parts[-1].gsub(/[:*?"<>|]/, "_") unless parts.empty?
-            sanitized_path = parts.join
+            sanitized_path = bs2r_sanitize_windows_path(path)
             begin
                 bs2r_dir_mkdir(sanitized_path, *rest)
             rescue Errno::EEXIST
                 0
             end
+        end
+    end
+
+    class << File
+        alias bs2r_file_open open
+        def open(path, *rest, &block)
+            bs2r_file_open(bs2r_sanitize_windows_path(path), *rest, &block)
+        end
+
+        alias bs2r_file_new new
+        def new(path, *rest)
+            bs2r_file_new(bs2r_sanitize_windows_path(path), *rest)
         end
     end
 
