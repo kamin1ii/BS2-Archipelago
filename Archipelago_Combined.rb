@@ -26,13 +26,23 @@
 
     class << File
         alias bs2r_file_open open
-        def open(path, *rest, &block)
-            bs2r_file_open(bs2r_sanitize_windows_path(path), *rest, &block)
+        def open(path, *rest, **kwargs, &block)
+            sanitized_path = bs2r_sanitize_windows_path(path)
+            if kwargs.empty?
+                bs2r_file_open(sanitized_path, *rest, &block)
+            else
+                bs2r_file_open(sanitized_path, *rest, **kwargs, &block)
+            end
         end
 
         alias bs2r_file_new new
-        def new(path, *rest)
-            bs2r_file_new(bs2r_sanitize_windows_path(path), *rest)
+        def new(path, *rest, **kwargs)
+            sanitized_path = bs2r_sanitize_windows_path(path)
+            if kwargs.empty?
+                bs2r_file_new(sanitized_path, *rest)
+            else
+                bs2r_file_new(sanitized_path, *rest, **kwargs)
+            end
         end
     end
 
@@ -125,7 +135,7 @@
         'Covenant: Bill' => '$game_switches[1151] = true',
         'Covenant: Dodo' => '$game_switches[1152] = true',
         'Covenant: Tweedledee & Tweedledum' => '$game_switches[1153] = true; $game_switches[1154] = true',
-        'Covenant: Capitellar' => '$game_switches[1155] = true',
+        'Covenant: Shisha' => '$game_switches[1155] = true',
         'Covenant: Mock Turtle' => '$game_switches[1157] = true',
         'Covenant: Walrus' => '$game_switches[1158] = true',
         'Covenant: Queen of Hearts' => '$game_switches[1159] = true',
@@ -135,6 +145,21 @@
         'Covenant: Kuti' => '$game_switches[1163] = true',
         'Covenant: Bandersnatch' => '$game_switches[1164] = true',
         'Covenant: Sho' => '$game_switches[1165] = true',
+        'Entered Rabbit Hole' => 'nil',
+        'Through Oxward Gate' => 'nil',
+        'Door to Elizabeth' => 'nil',
+        'Door to PoF' => 'nil',
+        'Progression 1' => 'nil',
+        'Progression 2' => 'nil',
+        'Progression 3' => 'nil',
+        'Progression 4' => 'nil',
+        'Progression 5' => 'nil',
+        'Progression 6' => 'nil',
+        'Progression 7' => 'nil',
+        'Progression 8' => 'nil',
+        'Progression 9' => 'nil',
+        'Progression 10' => 'nil',
+        'Ending G Achieved' => 'nil',
     }
 
     $ap_excluded_item_names = [
@@ -400,7 +425,8 @@ module BS2Randomizer
     end
 
     #--------------------------------------------------------------------
-    # AP-facing location naming.
+    # AP-facing location naming. MUST match generate_manual_apworld.py's
+    # location_name()/KIND_LABELS exactly.
     #--------------------------------------------------------------------
     KIND_LABELS = { "item" => "Item", "weapon" => "Weapon", "armor" => "Armor" }
 
@@ -447,6 +473,8 @@ module BS2Randomizer
         candidates && !candidates.empty?
     end
 
+    #--------------------------------------------------------------------
+    #--------------------------------------------------------------------
     def self.non_ap_region_pool(kind, map_id)
         region_pool(kind, map_id).select do |id|
             !has_ap_location?(kind, id) && !excluded_by_name?(kind, id)
@@ -474,6 +502,8 @@ module BS2Randomizer
         $ap_randomized_items
     end
 
+    #--------------------------------------------------------------------
+    #--------------------------------------------------------------------
     AP_LOCATION_POOL_FILE = "ap_location_pool.json"
 
     def self.ap_location_pool
@@ -670,8 +700,8 @@ module BS2Randomizer
     # ** AP-interception exclusion by event
     #--------------------------------------------------------------------
     AP_INTERCEPTION_EXCLUDED_EVENTS = {
-        [101, 5] => true,  # Library Dream weapon upgrade NPC
-        [51, 95] => true,  # Crash Chamber Cheshire Cat's Gift NPC -- whichever gift is chosen must always grant vanilla, never intercepted as an AP check (the only AP-tracked gift option, Ring of Life, already has its own real location elsewhere)
+        [101, 5] => true,
+        [51, 95] => true,
     }
 
     def self.excluded_event?(interpreter)
@@ -793,7 +823,7 @@ module BS2Randomizer
         [37, 53] => 1152,   # Dodo
         [22, 3] => 1153,    # Tweedledee
         [22, 4] => 1154,    # Tweedledum
-        [74, 6] => 1155,    # Capitellar
+        [74, 6] => 1155,    # Shisha
         [27, 3] => 1157,    # Mock Turtle
         [125, 10] => 1158,  # Walrus
         [137, 7] => 1159,   # Queen of Hearts
@@ -819,7 +849,7 @@ module BS2Randomizer
         [37, 53] => ['Covenant: Dodo', 'PoBT: Covenant: Dodo'],
         [22, 3] => ['Covenant: Tweedledee & Tweedledum', 'MW: Covenant: Tweedledee & Tweedledum'],
         [22, 4] => ['Covenant: Tweedledee & Tweedledum', 'MW: Covenant: Tweedledee & Tweedledum'],
-        [74, 6] => ['Covenant: Capitellar', 'SF: Covenant:  Caterpillar Shisha'],
+        [74, 6] => ['Covenant: Shisha', 'SF: Covenant: Shisha'],
         [27, 3] => ['Covenant: Mock Turtle', 'BoG: Covenant: Mock Turtle'],
         [125, 10] => ['Covenant: Walrus', "Oysters' Rotted Sea: Covenant: Walrus"],
         [137, 7] => ['Covenant: Queen of Hearts', 'Red Castle Frissel: Covenant: Queen of Hearts'],
@@ -841,7 +871,9 @@ module BS2Randomizer
     #--------------------------------------------------------------------
     # ** Locked-door transfer checks
     #--------------------------------------------------------------------
+    #--------------------------------------------------------------------
     # ** Boss arena maps
+    #----------------------------------------------------------------------
     #--------------------------------------------------------------------
     BOSS_ARENA_MAP_IDS = [
         58,   # Dodgson Bridge
@@ -855,19 +887,19 @@ module BS2Randomizer
         180,  # Jabberwock's Lair
         137,  # RCF
         153,  # ULT
-        158,  # Sick Clock Tower
+        158,  # SCT
         43,   # Jubjub's Nest
-        170,  # Queensland
+        170,  # QL
         40,   # MV
         83,   # IF
-        141,  # Deep Sea
+        141,  # DS
         127,  # FF
         328,  # Crimean Nursing Graveyard
         329,  # Florence's Arena
         344,  # Windless Valley
         350,  # Black Knight's Arena
         351,  # Unicorn/Lion White Castletown
-        73,   # Spore Forest
+        73,   # SF
         80,   # DM
         149,  # OWU
     ]
@@ -875,14 +907,24 @@ module BS2Randomizer
     LOCKED_DOOR_TRANSFER_TRIGGERS = {
         [51, 3] => {location: "Crash Chamber: Entered Rabbit Hole", requires_switch: nil},
         [9, 11] => {location: "OWU: Through Oxward Gate", requires_switch: 390},
-        [65, 4] => {location: "PoBT: Door to Elizabeth", requires_switch: nil},
-        [6, 3] => {location: "LT: Door to PoF", requires_switch: nil},
     }
 
     def self.check_locked_door_transfer_trigger(interpreter)
         key = [map_id(interpreter), interpreter.instance_variable_get(:@event_id)]
-        puts "[Archipelago_Combined][DEBUG] Transfer Player fired: map_id=#{key[0]}, event_id=#{key[1]}"
         entry = LOCKED_DOOR_TRANSFER_TRIGGERS[key]
+        return unless entry
+        return if entry[:requires_switch] && !(defined?($game_switches) && $game_switches && $game_switches[entry[:requires_switch]])
+        ArchipelagoLocations.send_check(entry[:location])
+    end
+
+    LOCKED_DOOR_SELFSWITCH_TRIGGERS = {
+        [6, 3, "A"] => {location: "LT: Door to PoF", requires_switch: nil},
+        [65, 4, "A"] => {location: "PoBT: Door to Elizabeth", requires_switch: nil},
+    }
+
+    def self.check_locked_door_selfswitch_trigger(interpreter, self_switch_ch)
+        key = [map_id(interpreter), interpreter.instance_variable_get(:@event_id), self_switch_ch]
+        entry = LOCKED_DOOR_SELFSWITCH_TRIGGERS[key]
         return unless entry
         return if entry[:requires_switch] && !(defined?($game_switches) && $game_switches && $game_switches[entry[:requires_switch]])
         ArchipelagoLocations.send_check(entry[:location])
@@ -898,13 +940,13 @@ module BS2Randomizer
 
     #--------------------------------------------------------------------
     # ** Boss soul grants via battle victory
-    #--------------------------------------------------------------------
+    #----------------------------------------------------------------------
     BOSS_SOUL_TROOP_TRIGGERS = {
         291 => [["Arbiter's Scythe", "ASH: Arbiter's Scythe"]],
         30 => [['Fairy Tale Scrap Two', 'LT: Fairy Tale Scrap Two']],
         31 => [['Fairy Tale Scrap One', 'ULT: Fairy Tale Scrap One']],
         32 => [['Fairy Tale Scrap Three', 'LT: Fairy Tale Scrap Three']],
-        174 => [['Soul of the Head-Hunting Beast', 'CC: Soul of the Head-Hunting Beast'], ['Soul of the Dragon Hunter', 'CC: Soul of the Dragon Hunter']],
+        174 => [['Soul of the Head-Hunting Beast', 'CC: Soul of the Head-Hunting Beast']],
         175 => [['Soul of Distraction', 'LT: Soul of Distraction']],
         178 => [['Soul of the Pregnant Cake', 'IF: Soul of the Pregnant Cake']],
         179 => [['Soul of the Bellcaller', 'BFM: Soul of the Bellcaller']],
@@ -934,6 +976,14 @@ module BS2Randomizer
         569 => [['Soul of Florence', 'Crimean Nursing Graveyard: Soul of Florence']],
         614 => [['Soul of the White Unicorn', 'Winterbell: Soul of the White Unicorn']],
         616 => [['Soul of the White Lion', 'Winterbell: Soul of the White Lion']],
+
+        # NPCs and invaders (hostile NPCs that chase and initiate a fight)
+        # -- same mechanism, same table, since it's the identical shape of
+        # problem: these grant loot as a native drop_item on their own
+        # database entry, and this table is a guaranteed, direct backup
+        # that fires on defeat regardless of any relocation from
+        # enemy_randomization or which of a troop's own forms was
+        # actually fought.
         71 => [['Bloodbite Ring', 'PoBT: Bloodbite Ring']],  # Sadistic Mistress Brownrigg
         60 => [["Sorcerer's Staff", "RGC: Sorcerer's Staff"]],  # Cotton the Witch
         91 => [['Ring of Rebellion', "DM: Ring of Rebellion"]],  # Monster Butler Archibald
@@ -994,7 +1044,7 @@ module BS2Randomizer
             next unless data
             data.each_with_index do |obj, id|
                 next if id == 0 || obj.nil?
-                next if obj.name.to_s.strip.empty?  # skip blank/ghost database entries
+                next if obj.name.to_s.strip.empty?
                 next if excluded_by_name?(kind, id)
                 next if has_ap_location?(kind, id)
                 @shop_replacement_pool[type_code] << [type_code, id]
@@ -1418,10 +1468,16 @@ module BS2Randomizer
 
     def self.shuffled_shop_entry(entry)
         return entry if shop_entry_protected?(entry)
+        type_code, item_id = entry[0], entry[1]
+        kind = case type_code
+               when 0 then "item"
+               when 1 then "weapon"
+               when 2 then "armor"
+               end
+        return entry if kind && has_ap_location?(kind, item_id)
         pools = shop_replacement_pool
         available_types = [0, 1, 2].select { |t| !pools[t].empty? }
         return entry if available_types.empty?
-        type_code, item_id = entry[0], entry[1]
         base_key = "shop:#{type_code}:#{item_id}"
         chosen_type = available_types[hash_value("#{base_key}:type") % available_types.length]
         replacement = pick(pools[chosen_type], "#{base_key}:within_type")
@@ -1435,11 +1491,13 @@ module BattleManager
     class << self
         alias bs2ap_process_victory process_victory
         def process_victory
-            troop_id = $game_troop.instance_variable_get(:@troop_id) if defined?($game_troop) && $game_troop
-            BS2Randomizer.grant_boss_souls_for_troop(troop_id) if troop_id
-            if defined?($ap_pending_arena_soul_troop_id) && $ap_pending_arena_soul_troop_id
-                BS2Randomizer.grant_boss_souls_for_troop($ap_pending_arena_soul_troop_id)
-                $ap_pending_arena_soul_troop_id = nil
+            unless BS2Randomizer.in_endless_floor?
+                troop_id = $game_troop.instance_variable_get(:@troop_id) if defined?($game_troop) && $game_troop
+                BS2Randomizer.grant_boss_souls_for_troop(troop_id) if troop_id
+                if defined?($ap_pending_arena_soul_troop_id) && $ap_pending_arena_soul_troop_id
+                    BS2Randomizer.grant_boss_souls_for_troop($ap_pending_arena_soul_troop_id)
+                    $ap_pending_arena_soul_troop_id = nil
+                end
             end
             bs2ap_process_victory
         end
@@ -1465,24 +1523,6 @@ class Game_Event < Game_Character
             return
         end
         bs2ap_event_start
-    end
-
-    EVENT_REFRESH_SWITCH_SUPPRESSION = {
-        [53, 11] => 178,
-        [130, 77] => 59,
-    }
-
-    alias bs2r_event_refresh refresh
-    def refresh
-        switch_id = EVENT_REFRESH_SWITCH_SUPPRESSION[[$game_map ? $game_map.map_id : nil, @id]]
-        if switch_id && $game_switches[switch_id]
-            original_value = $game_switches[switch_id]
-            $game_switches[switch_id] = false
-            bs2r_event_refresh
-            $game_switches[switch_id] = original_value
-        else
-            bs2r_event_refresh
-        end
     end
 end
 
@@ -1521,8 +1561,26 @@ module ArchipelagoLocations
         $ap_location_name_to_id[name]
     end
 
+    LOCKED_EVENT_ITEM_ID_TO_NAME = {
+        396500350 => "Entered Rabbit Hole",
+        396500351 => "Through Oxward Gate",
+        396500352 => "Door to Elizabeth",
+        396500353 => "Door to PoF",
+        396500354 => "Progression 1",
+        396500355 => "Progression 2",
+        396500356 => "Progression 3",
+        396500357 => "Progression 4",
+        396500358 => "Progression 5",
+        396500359 => "Progression 6",
+        396500360 => "Progression 7",
+        396500361 => "Progression 8",
+        396500362 => "Progression 9",
+        396500363 => "Progression 10",
+        396500364 => "Ending G Achieved",
+    }
+
     def self.resolve_item_name(item_id)
-        $ap_item_id_to_name[item_id]
+        $ap_item_id_to_name[item_id] || LOCKED_EVENT_ITEM_ID_TO_NAME[item_id]
     end
 
     $ap_checked_locations = {}
@@ -1534,6 +1592,7 @@ module ArchipelagoLocations
     end
 
     def self.send_check(name)
+        return if BS2Randomizer.in_endless_floor?
         return if $ap_checked_locations[name] # don't re-send a check we already sent this session
         unless $ap_datapackage_ready
 
@@ -1592,6 +1651,7 @@ class Game_Interpreter
     alias bs2r4_command_127 command_127
     alias bs2r4_command_128 command_128
     alias bs2r4_command_121 command_121
+    alias bs2r7_command_123 command_123
     alias bs2r6_command_117 command_117
     alias bs2r9_command_302 command_302
 
@@ -1601,12 +1661,8 @@ class Game_Interpreter
     def command_302
         map_id = $game_map ? $game_map.map_id : nil
         $ap_shop_randomization_excluded = BS2Randomizer.shop_excluded?(map_id, @event_id)
-        # Captured here (not available at all within Scene_Shop#prepare
-        # itself, which runs later from a different context) so
-        # shuffled_shop_entry can check per-slot protections below.
         $ap_current_shop_map_id = map_id
         $ap_current_shop_event_id = @event_id
-        puts "[Archipelago_Combined][DEBUG] Shop opened: map_id=#{map_id}, event_id=#{@event_id}"
         bs2r9_command_302
     end
 
@@ -1629,6 +1685,40 @@ class Game_Interpreter
             }].to_json
             $archipelago.client_socket.send(deathlink_packet)
         end
+        if @params[0] == 34
+            prevent_covenant_purge = defined?($ap_prevent_covenant_purge) ? $ap_prevent_covenant_purge : true
+            if prevent_covenant_purge && defined?($game_variables) && $game_variables && $game_variables[11].to_i >= 10
+                original_602 = $game_switches[602]
+                $game_switches[602] = true
+                bs2r6_command_117
+                $game_switches[602] = original_602
+                return true
+            end
+        end
+        if @params[0] == 266
+            $ap_true_pre_dungeon_inventory = {
+                items:   ($game_party.instance_variable_get(:@items)   || {}).dup,
+                weapons: ($game_party.instance_variable_get(:@weapons) || {}).dup,
+                armors:  ($game_party.instance_variable_get(:@armors)  || {}).dup,
+                gold:    $game_party.gold,
+            }
+        end
+        if @params[0] == 268
+            current_bonedust = $game_party.instance_variable_get(:@items)[95]
+            original_params = @params
+            @params = [267]
+            bs2r6_command_117
+            @params = original_params
+            if $ap_true_pre_dungeon_inventory
+                restored_items = $ap_true_pre_dungeon_inventory[:items].dup
+                restored_items[95] = current_bonedust
+                $game_party.instance_variable_set(:@items,   restored_items)
+                $game_party.instance_variable_set(:@weapons, $ap_true_pre_dungeon_inventory[:weapons].dup)
+                $game_party.instance_variable_set(:@armors,  $ap_true_pre_dungeon_inventory[:armors].dup)
+                $game_party.gain_gold($ap_true_pre_dungeon_inventory[:gold] - $game_party.gold)
+            end
+            return true
+        end
         bs2r6_command_117
     end
 
@@ -1648,13 +1738,29 @@ class Scene_Map < Scene_Base
             $game_map.interpreter.setup($data_common_events[Game_Interpreter::DEATH_LINK_COMMON_EVENT_ID].list)
         end
 
-        (1..10).each do |n|
-            BS2Randomizer.check_locked_variable_trigger(11, n, "LD: Progression #{n}")
+        if defined?($ap_pending_item_grants) && $ap_pending_item_grants && !$ap_pending_item_grants.empty? &&
+           $game_map && $game_map.interpreter && !$game_map.interpreter.running?
+            item = $ap_pending_item_grants.pop(true) rescue nil
+            if item
+                $ap_giving = true
+                begin
+                    name = ArchipelagoLocations.resolve_item_name(item)
+                    handled = name ? ArchipelagoLocations.grant_from_name(name) : false
+                    if handled
+                        ArchipelagoLocations.log_ap_activity("RECEIVED: #{name}")
+                    else
+                        ArchipelagoLocations.log_ap_activity("RECEIVED (unhandled): #{name.inspect} (id #{item})")
+                        eval_target = $expanded_receiveditem_methods.fetch(item, "puts \"[Archipelago_Combined] No defined method for ReceivedItem ID #{item}!\"")
+                        eval(eval_target)
+                    end
+                ensure
+                    $ap_giving = false
+                end
+            end
         end
 
-        prevent_covenant_purge = defined?($ap_prevent_covenant_purge) ? $ap_prevent_covenant_purge : true
-        if prevent_covenant_purge && defined?($game_variables) && $game_variables && $game_variables[11].to_i >= 10
-            $game_switches[602] = true
+        (1..10).each do |n|
+            BS2Randomizer.check_locked_variable_trigger(11, n, "LD: Progression #{n}")
         end
     end
 end
@@ -1707,7 +1813,20 @@ class Game_Interpreter
                 $archipelago.say("!release")
             end
         end
+        was_in_endless_floor = BS2Randomizer.in_endless_floor?
         bs2r4_command_121
+        if was_in_endless_floor && !BS2Randomizer.in_endless_floor? && $ap_pending_endless_floor_items
+            pending = $ap_pending_endless_floor_items
+            $ap_pending_endless_floor_items = []
+            pending.each do |item, amount, include_equip|
+                $game_party.bs2ap_gain_item(item, amount, include_equip)
+            end
+        end
+    end
+
+    def command_123
+        bs2r7_command_123
+        BS2Randomizer.check_locked_door_selfswitch_trigger(self, @params[0]) if @params[1] == 0 # 0 = ON, 1 = OFF
     end
 
     def command_201
@@ -1765,7 +1884,8 @@ class Game_Interpreter
             if !BS2Randomizer.intro_map?(self) && !BS2Randomizer.never_shuffle_item?(@params[0]) &&
                !BS2Randomizer.protected_bloody_key?(self, @params) &&
                !excluded &&
-               !BS2Randomizer.excluded_by_name?("item", @params[0])
+               !BS2Randomizer.excluded_by_name?("item", @params[0]) &&
+               !BS2Randomizer.in_endless_floor?
                 value = operate_value(@params[1], @params[2], @params[3])
                 if value > 0
                     name = BS2Randomizer.ap_location_name("item", BS2Randomizer.map_id(self), @params[0].to_i)
@@ -1787,8 +1907,6 @@ class Game_Interpreter
                             end
                         end
                     end
-                    # No AP location and no shuffle target -- fall through to
-                    # vanilla grant rather than silently dropping the item.
                 end
             end
             bs2r4_command_126
@@ -1805,7 +1923,8 @@ class Game_Interpreter
         excluded = BS2Randomizer.excluded_event?(self)
         $ap_excluded_event_grant = true if excluded
         begin
-            if !BS2Randomizer.intro_map?(self) && !excluded && !BS2Randomizer.excluded_by_name?("weapon", @params[0])
+            if !BS2Randomizer.intro_map?(self) && !excluded && !BS2Randomizer.excluded_by_name?("weapon", @params[0]) &&
+               !BS2Randomizer.in_endless_floor?
                 value = operate_value(@params[1], @params[2], @params[3])
                 if value > 0
                     name = BS2Randomizer.ap_location_name("weapon", BS2Randomizer.map_id(self), @params[0].to_i)
@@ -1841,7 +1960,8 @@ class Game_Interpreter
         excluded = BS2Randomizer.excluded_event?(self)
         $ap_excluded_event_grant = true if excluded
         begin
-            if !BS2Randomizer.intro_map?(self) && !excluded && !BS2Randomizer.excluded_by_name?("armor", @params[0])
+            if !BS2Randomizer.intro_map?(self) && !excluded && !BS2Randomizer.excluded_by_name?("armor", @params[0]) &&
+               !BS2Randomizer.in_endless_floor?
                 value = operate_value(@params[1], @params[2], @params[3])
                 if value > 0
                     name = BS2Randomizer.ap_location_name("armor", BS2Randomizer.map_id(self), @params[0].to_i)
@@ -1870,24 +1990,17 @@ class Game_Interpreter
     end
 end
 
-#--------------------------------------------------------------------------
-#--------------------------------------------------------------------------
 class Scene_Shop < Scene_MenuBase
     alias bs2r5_prepare prepare
     def prepare(goods, purchase_only)
-        kind_name = ->(tc) { case tc; when 0 then "item"; when 1 then "weapon"; when 2 then "armor"; end }
-        puts "[Archipelago_Combined][DEBUG] Shop goods BEFORE: " + goods.map { |e| "#{BS2Randomizer.display_name(kind_name.call(e[0]), e[1])} (type=#{e[0]}, id=#{e[1]})" }.join(", ")
         goods = BS2Randomizer.inject_forced_shop_entries($ap_current_shop_map_id, $ap_current_shop_event_id, goods)
         if BS2Randomizer.enabled?("shop_item_randomization") && !$ap_shop_randomization_excluded
             goods = goods.map { |entry| BS2Randomizer.shuffled_shop_entry(entry) }
         end
-        puts "[Archipelago_Combined][DEBUG] Shop goods AFTER: " + goods.map { |e| "#{BS2Randomizer.display_name(kind_name.call(e[0]), e[1])} (type=#{e[0]}, id=#{e[1]})" }.join(", ")
         bs2r5_prepare(goods, purchase_only)
     end
 end
 
-#--------------------------------------------------------------------------
-#--------------------------------------------------------------------------
 class Game_Actor < Game_Battler
     alias bs2ap_trade_item_with_party trade_item_with_party
     def trade_item_with_party(new_item, old_item)
@@ -1900,8 +2013,6 @@ class Game_Actor < Game_Battler
     end
 end
 
-#--------------------------------------------------------------------------
-#--------------------------------------------------------------------------
 class Game_Party < Game_Unit
     alias bs2ap_gain_item gain_item
     def gain_item(item, amount, include_equip = false)
@@ -1919,6 +2030,10 @@ class Game_Party < Game_Unit
                     return # don't grant locally -- AP will send the real item back
                 end
             end
+        end
+        if item && amount > 0 && $ap_giving && BS2Randomizer.in_endless_floor?
+            ($ap_pending_endless_floor_items ||= []) << [item, amount, include_equip]
+            return
         end
         bs2ap_gain_item(item, amount, include_equip)
         if kind == "weapon" && item
@@ -1944,8 +2059,6 @@ class Game_Party < Game_Unit
     end
 end
 
-#==============================================================================
-#==============================================================================
     def restart_archipelago
 
         BS2Randomizer.build_ap_randomized_items!
@@ -1965,9 +2078,6 @@ end
         $archipelago.add_listener("Connected") do |msg|
             $ap_goal = (msg["slot_data"] || {})["goal"] || "true_ending"
             $ap_death_link_enabled = (msg["slot_data"] || {})["death_link"] == true
-            # Defaults to true (matching the YAML option's own default) if
-            # somehow missing from slot_data, rather than silently treating
-            # an old/incompatible server response as "off".
             slot_data = msg["slot_data"] || {}
             $ap_auto_meet_red_hood = slot_data.key?("auto_meet_red_hood") ? slot_data["auto_meet_red_hood"] == true : true
             $ap_prevent_covenant_purge = slot_data.key?("prevent_covenant_purge") ? slot_data["prevent_covenant_purge"] == true : true
@@ -1992,20 +2102,7 @@ end
                                 sleep 0.5
                                 next
                             end
-                            $ap_giving = true
-                            begin
-                                name = ArchipelagoLocations.resolve_item_name(item)
-                                handled = name ? ArchipelagoLocations.grant_from_name(name) : false
-                                if handled
-                                    ArchipelagoLocations.log_ap_activity("RECEIVED: #{name}")
-                                else
-                                    ArchipelagoLocations.log_ap_activity("RECEIVED (unhandled): #{name.inspect} (id #{item})")
-                                    eval_target = $expanded_receiveditem_methods.fetch(item, "puts \"[Archipelago_Combined] No defined method for ReceivedItem ID #{item}!\"")
-                                    eval(eval_target)
-                                end
-                            ensure
-                                $ap_giving = false
-                            end
+                            ($ap_pending_item_grants ||= Queue.new).push(item)
                             sleep 0.1
                         else
                             sleep 0.1
@@ -2089,10 +2186,11 @@ end
             $game_player        = contents[:player]
             auto_meet_red_hood = defined?($ap_auto_meet_red_hood) ? $ap_auto_meet_red_hood : true
             if auto_meet_red_hood
-                $game_switches[14] = true
-                $game_variables[9] = [$game_variables[9].to_i, 1].max
                 $game_switches[178] = true
+                $game_variables[9] = [$game_variables[9].to_i, 1].max
             end
+            $game_variables[97] = [$game_variables[97].to_i, 2].max
+            $game_variables[88] = [$game_variables[88].to_i, 2].max
             if $load_autoconnect && contents[:AP_connect_info]
                 $archipelago.connect_info = contents[:AP_connect_info]
                 config_path = File.join(Dir.pwd, "archipelago.json")
@@ -2120,14 +2218,13 @@ end
             alias bs2r_setup_new_game setup_new_game
             def setup_new_game
                 bs2r_setup_new_game
-                # New-game counterpart to the extract_save_contents force
-                # above -- see the comment there for the full reasoning.
                 auto_meet_red_hood = defined?($ap_auto_meet_red_hood) ? $ap_auto_meet_red_hood : true
                 if auto_meet_red_hood
-                    $game_switches[14] = true
-                    $game_variables[9] = [$game_variables[9].to_i, 1].max
                     $game_switches[178] = true
+                    $game_variables[9] = [$game_variables[9].to_i, 1].max
                 end
+                $game_variables[97] = [$game_variables[97].to_i, 2].max
+                $game_variables[88] = [$game_variables[88].to_i, 2].max
             end
         end
     end
