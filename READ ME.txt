@@ -1,6 +1,6 @@
 Installer for Black Souls 2 archipelago integration.
 
-Should work with all versions, including steam (though achievements will be disabled).
+Should work with all PATCHED versions, including steam (though achievements will be disabled).
 
 
 steps:

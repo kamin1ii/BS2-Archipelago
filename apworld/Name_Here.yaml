@@ -123,10 +123,30 @@ black_souls2:
     'false': 0
     'true': 50
 
+  ring_link:
+    # Off by default. If enabled, gold is shared with every other player in the
+    # multiworld who also has Ring Link on: gold you gain or spend is sent as
+    # rings, and rings from other games arrive as gold. Gains and spending both link.
+    'false': 50
+    'true': 0
+
+  ring_link_gold_per_ring:
+    # How much gold one ring is worth, in both directions. Only used if Ring Link is on.
+    # At the default of 100, spending 300 gold sends -3 rings, and receiving 5 rings gives you 500 gold.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 1
+    # Maximum value is 10000
+    100: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-10000: 0 # random value between 1 and 10000
+
   goal:
     # Which ending would you like to set as goal?
-    true_ending: 0
-    good_ending: 50
+    true_ending: 50
+    good_ending: 0
     common_endings: 0
     ending_f: 0
 
