@@ -3121,3 +3121,68 @@ module BattleManager
     end
 end
 
+
+#==============================================================================
+# Fixes for checks that could never be sent
+#==============================================================================
+module BS2CheckFixes
+    # Drink Me and Eat Me are never shuffled so the vanilla grant skipped their checks
+    SIZE_ITEM_PICKUPS = {
+        [54, 4] => [69, "CC: Drink Me"],
+        [136, 3] => [70, "CC: Eat Me"],
+    }
+    GRAPES_CHECK = "GotH: Fairy Tale [The Fox and The Grapes]"
+    GRAPES_MAP = 104
+    GRAPES_EVENTS = [7, 8]
+    GRIFFY_EVENT = 8
+    GRIFFY_VARIABLE = 88
+
+    def self.checked?(name)
+        defined?($ap_checked_locations) && $ap_checked_locations && $ap_checked_locations[name]
+    end
+
+    def self.grapes_pending?
+        !checked?(GRAPES_CHECK)
+    end
+end
+
+class Game_Interpreter
+    alias bs2fix_command_126 command_126
+    def command_126
+        key = [BS2Randomizer.map_id(self), @event_id]
+        pickup = BS2CheckFixes::SIZE_ITEM_PICKUPS[key]
+        if pickup && @params[0] == pickup[0] && operate_value(@params[1], @params[2], @params[3]) > 0
+            ArchipelagoLocations.send_check(pickup[1])
+        end
+        bs2fix_command_126
+    end
+
+    alias bs2fix_command_122 command_122
+    def command_122
+        # winning the grapes fight after the cathedral scene must not push the Griffy quest past its next step
+        if BS2Randomizer.map_id(self) == BS2CheckFixes::GRAPES_MAP && @event_id == BS2CheckFixes::GRIFFY_EVENT &&
+           @params[0] == BS2CheckFixes::GRIFFY_VARIABLE && $game_variables[BS2CheckFixes::GRIFFY_VARIABLE] >= 3
+            return true
+        end
+        bs2fix_command_122
+    end
+end
+
+class Game_Event < Game_Character
+    alias bs2fix_conditions_met? conditions_met?
+    def conditions_met?(page)
+        c = page.condition
+        pickup = BS2CheckFixes::SIZE_ITEM_PICKUPS[[@map_id, @id]]
+        # the pickup hides while the item is held, keep it until its check is sent
+        if pickup && c.item_valid && c.item_id == pickup[0] && !BS2CheckFixes.checked?(pickup[1])
+            return false
+        end
+        # the cathedral scene raises the Griffy quest past the grapes fight, keep the fight until its check is sent
+        if @map_id == BS2CheckFixes::GRAPES_MAP && BS2CheckFixes::GRAPES_EVENTS.include?(@id) &&
+           c.variable_valid && c.variable_id == BS2CheckFixes::GRIFFY_VARIABLE && c.variable_value >= 3 &&
+           !c.switch1_valid && !c.switch2_valid && BS2CheckFixes.grapes_pending?
+            return false
+        end
+        bs2fix_conditions_met?(page)
+    end
+end
