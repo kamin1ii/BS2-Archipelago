@@ -147,6 +147,8 @@
         'Covenant: Kuti' => '$game_switches[1163] = true',
         'Covenant: Bandersnatch' => '$game_switches[1164] = true',
         'Covenant: Sho' => '$game_switches[1165] = true',
+        'Covenant: Margaret' => '$game_switches[1156] = true',
+        'Covenant: Jabberwock' => '$game_switches[1166] = true',
         'Entered Rabbit Hole' => 'nil',
         'Through Oxward Gate' => 'nil',
         'Door to Elizabeth' => 'nil',
@@ -1219,7 +1221,9 @@ module BS2Randomizer
     #--------------------------------------------------------------------
     #----------------------------------------------------------------------
     AP_FORCE_NOT_OWNED_BRANCH = {
-        [169, 8] => [["armor", "Prickett's Ring"]],  # Prickett
+        [169, 8] => [["armor", "Prickett's Ring", "QL: Prickett's Ring"]],  # Prickett
+        [101, 7] => [["armor", "Tyrant Ring", "LD: Tyrant Ring"]],  # death tablet
+        [178, 9] => [["armor", "Tyrant Ring", "LD: Tyrant Ring"]],  # death tablet
     }
 
     def self.force_not_owned_branch?(interpreter, kind, id)
@@ -1227,7 +1231,8 @@ module BS2Randomizer
         entries = AP_FORCE_NOT_OWNED_BRANCH[key]
         return false unless entries
         name = display_name(kind, id)
-        entries.any? { |k, n| k == kind.to_s && n == name }
+        # stop once the check is sent or she hands the ring over on every visit
+        entries.any? { |k, n, loc| k == kind.to_s && n == name && !(loc && $ap_checked_locations && $ap_checked_locations[loc]) }
     end
 
     #--------------------------------------------------------------------
@@ -1406,6 +1411,8 @@ module BS2Randomizer
         [197, 4] => ['Covenant: Kuti', 'DS: Covenant: Kuti'],
         [133, 5] => ['Covenant: Bandersnatch', 'FF: Covenant: Bandersnatch'],
         [340, 7] => ['Covenant: Sho', 'WV: Covenant: Sho'],
+        [80, 14] => ['Covenant: Margaret', 'DM: Covenant: Margaret'],
+        [180, 10] => ['Covenant: Jabberwock', 'CR: Covenant: Jabberwock'],
     }
 
     def self.check_covenant_npc_interact_trigger(map_id, event_id)
@@ -3136,6 +3143,16 @@ module BS2CheckFixes
     GRAPES_EVENTS = [7, 8]
     GRIFFY_EVENT = 8
     GRIFFY_VARIABLE = 88
+    # the oyster quest only ends once her 99 Polluted Fish are gone, a shuffled stack never counts
+    VANILLA_GRANTS = {
+        [140, 21] => [56],
+    }
+
+    # Margaret and Jabberwock are also bosses, so only the covenant choice is gated
+    COVENANT_CHOICES = {
+        [80, 14] => [84, 1156],
+        [180, 10] => [91, 1166],
+    }
 
     def self.checked?(name)
         defined?($ap_checked_locations) && $ap_checked_locations && $ap_checked_locations[name]
@@ -3154,7 +3171,20 @@ class Game_Interpreter
         if pickup && @params[0] == pickup[0] && operate_value(@params[1], @params[2], @params[3]) > 0
             ArchipelagoLocations.send_check(pickup[1])
         end
+        vanilla = BS2CheckFixes::VANILLA_GRANTS[key]
+        return bs2r4_command_126 if vanilla && vanilla.include?(@params[0])
         bs2fix_command_126
+    end
+
+    alias bs2fix_command_117 command_117
+    def command_117
+        choice = BS2CheckFixes::COVENANT_CHOICES[[BS2Randomizer.map_id(self), @event_id]]
+        if choice && @params[0] == choice[0] && !$game_switches[choice[1]]
+            $game_message.add(BS2Randomizer::COVENANT_BLOCKED_MESSAGE)
+            wait_for_message
+            return true
+        end
+        bs2fix_command_117
     end
 
     alias bs2fix_command_122 command_122
