@@ -970,9 +970,16 @@ module BS2Randomizer
 
     #--------------------------------------------------------------------
     #--------------------------------------------------------------------
+    # quest items that events check for later, shuffling them away can lock a quest or a check
+    NON_AP_SHUFFLE_KEEP = {
+        "item" => [20, 65, 71, 78, 90, 91, 100, 231, 232, 303],
+        "armor" => [37],
+    }
+
     def self.non_ap_region_pool(kind, map_id)
+        keep = NON_AP_SHUFFLE_KEEP[kind.to_s] || []
         region_pool(kind, map_id).select do |id|
-            !has_ap_location?(kind, id) && !excluded_by_name?(kind, id)
+            !has_ap_location?(kind, id) && !excluded_by_name?(kind, id) && !keep.include?(id)
         end
     end
 
