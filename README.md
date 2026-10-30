@@ -5,7 +5,7 @@ Fork of [cthulhusshoes/BS2-Archipelago](https://github.com/cthulhusshoes/BS2-Arc
 - Boss Shuffle (on by default) swaps which boss you fight in each boss arena, scaled to the arena. Boss souls and fairy tales still come from the arena, so progress is unchanged
 - Enemy Shuffle (off by default) swaps the regular enemy groups, scaled to the group they replace
 - Both options replace the installer's old enemy randomization when you connect to Archipelago
-- Fixed 58 location names that never matched the apworld, so those checks were never sent
+- Fixed 27 checks that were never sent because their pool names did not match the apworld (mostly Crimean Nursing Graveyard, White Castletown and Winterbell, plus Fairy Tale [Pinocchio]). 31 more pool names were also corrected but were already sent by other code
 - Fixed Fairy Tale [Peter Pan] never being sent after the Jubjub fight
 - Fixed Drink Me and Eat Me never sending their checks, and their pickups vanishing while you hold the item
 - Fixed Griffy vanishing from the Fox and the Grapes arena after the Ripon Cathedral scene with Bill
