@@ -52,10 +52,10 @@
     "BoG: Covenant: Mock Turtle"
   ],
   "Mist Billingsgate Fish Market": [
-    "Billingsgate Fish Market: Mist Billingsgate Fish Market"
+    "BFM: Mist Billingsgate Fish Market"
   ],
   "Mist Black Knight Arena": [
-    "Black Knight Arena: Mist Black Knight Arena"
+    "WCT: Mist Black Knight Arena"
   ],
   "Cannibal's Shield": [
     "BoG: Cannibal's Shield"
@@ -109,49 +109,49 @@
     "CR: Soul of the Jabberwock"
   ],
   "Mist Crash Chamber": [
-    "Crash Chamber: Mist Crash Chamber"
+    "CC: Mist Crash Chamber"
   ],
   "Almighty Ring": [
-    "Crimean Nursing Graveyard: Almighty Ring"
+    "CNG: Almighty Ring"
   ],
   "Corpse-Eater's Ring": [
-    "Crimean Nursing Graveyard: Corpse-Eater's Ring"
+    "CNG: Corpse-Eater's Ring"
   ],
   "Fake Angel's Wreath": [
-    "Crimean Nursing Graveyard: Fake Angel's Wreath"
+    "CNG: Fake Angel's Wreath"
   ],
   "God's Angels": [
-    "Crimean Nursing Graveyard: God's Angels"
+    "CNG: God's Angels"
   ],
   "Miracle [Summon Wall of Flesh]": [
-    "Crimean Nursing Graveyard: Miracle [Summon Wall of Flesh]"
+    "CNG: Miracle [Summon Wall of Flesh]"
   ],
   "Mist Crimean Nursing Graveyard": [
-    "Crimean Nursing Graveyard: Mist Crimean Nursing Graveyard"
+    "CNG: Mist Crimean Nursing Graveyard"
   ],
   "Sorcery [Acid Rain]": [
-    "Crimean Nursing Graveyard: Sorcery [Acid Rain]"
+    "CNG: Sorcery [Acid Rain]"
   ],
   "Sorcery [Shadowy Bog]": [
-    "Crimean Nursing Graveyard: Sorcery [Shadowy Bog]"
+    "CNG: Sorcery [Shadowy Bog]"
   ],
   "Soul of Florence": [
-    "Crimean Nursing Graveyard: Soul of Florence"
+    "CNG: Soul of Florence"
   ],
   "Soul of the Wet Nurses": [
-    "Crimean Nursing Graveyard: Soul of the Wet Nurses"
+    "CNG: Soul of the Wet Nurses"
   ],
   "Two-Faced Buckler": [
-    "Crimean Nursing Graveyard: Two-Faced Buckler"
+    "CNG: Two-Faced Buckler"
   ],
   "Unbreakable Ring": [
-    "Crimean Nursing Graveyard: Unbreakable Ring"
+    "CNG: Unbreakable Ring"
   ],
   "Whittled Ring": [
-    "Crimean Nursing Graveyard: Whittled Ring"
+    "CNG: Whittled Ring"
   ],
   "Yellow Cloth": [
-    "Crimean Nursing Graveyard: Yellow Cloth"
+    "CNG: Yellow Cloth"
   ],
   "Aristocrat's Clothes": [
     "DM: Aristocrat's Clothes"
@@ -202,22 +202,22 @@
     "DS: Soul of the Deep Sea Knight"
   ],
   "Blackbeard's Ring": [
-    "Deep Sea: Blackbeard's Ring"
+    "DS: Blackbeard's Ring"
   ],
   "Covenant: Kuti": [
-    "Deep Sea: Covenant: Kuti"
+    "DS: Covenant: Kuti"
   ],
   "Mist Deep Sea": [
-    "Deep Sea: Mist Deep Sea"
+    "DS: Mist Deep Sea"
   ],
   "Mist Dodgson Bridge": [
     "LT: Mist Dodgson Bridge"
   ],
   "Mist Duchess' Mansion": [
-    "Duchess' Mansion: Mist Duchess' Mansion"
+    "DM: Mist Duchess' Mansion"
   ],
   "Covenant: Hatta": [
-    "Endless Tea Party: Covenant: Hatta"
+    "ETP: Covenant: Hatta"
   ],
   "Armor of the Sun": [
     "FF: Armor of the Sun"
@@ -248,19 +248,19 @@
     "FF: Soul of the Bandersnatch"
   ],
   "Fairy Tale [Pinocchio]": [
-    "Fairy Tale [Pinocchio]"
+    "DS: Fairy Tale [Pinocchio]"
   ],
   "Mist Florence Arena": [
-    "Florence Arena: Mist Florence Arena"
+    "CNG: Mist Florence Arena"
   ],
   "Covenant: Bandersnatch": [
     "FF: Covenant: Bandersnatch"
   ],
   "Mist Fuming Forest": [
-    "Fuming Forest: Mist Fuming Forest"
+    "FF: Mist Fuming Forest"
   ],
   "Covenant: Queen of Hearts": [
-    "Red Castle Frissel: Covenant: Queen of Hearts"
+    "RCF: Covenant: Queen of Hearts"
   ],
   "Fairy Tale [The Fox and The Grapes]": [
     "GotH: Fairy Tale [The Fox and The Grapes]"
@@ -309,13 +309,13 @@
     "IF: Wonder Hat"
   ],
   "Mist Infinite Food": [
-    "Infinite Food: Mist Infinite Food"
+    "IF: Mist Infinite Food"
   ],
   "Mist Jabberwock's Lair": [
-    "Jabberwock's Lair: Mist Jabberwock's Lair"
+    "FF: Mist Jabberwock's Lair"
   ],
   "Mist Jubjub's Nest": [
-    "Jubjub's Nest: Mist Jubjub's Nest"
+    "SCT: Mist Jubjub's Nest"
   ],
   "Cloak of Shadows": [
     "LC: Cloak of Shadows"
@@ -541,7 +541,7 @@
     "MW: Mist Mental Ward"
   ],
   "Mist Mushroom Village": [
-    "Mushroom Village: Mist Mushroom Village"
+    "MV: Mist Mushroom Village"
   ],
   "Angel's Raiment": [
     "NF: Angel's Raiment"
@@ -623,10 +623,10 @@
     "OWU: Soul of the Dean"
   ],
   "Mist Ox Ward University": [
-    "Ox Ward University: Mist Ox Ward University"
+    "OWU: Mist Ox Ward University"
   ],
   "Covenant: Walrus": [
-    "Oysters' Rotted Sea: Covenant: Walrus"
+    "ORS: Covenant: Walrus"
   ],
   "Blade Shield": [
     "PoBT: Blade Shield"
@@ -812,7 +812,7 @@
     "RH: Sorcery [Phalanx]"
   ],
   "Mist Red Castle Frissel": [
-    "Red Castle Frissel: Mist Red Castle Frissel"
+    "RCF: Mist Red Castle Frissel"
   ],
   "Covenant: Bill": [
     "RGC: Covenant: Bill"
@@ -914,13 +914,13 @@
     "SH: Squishy"
   ],
   "Soul of the God's Odd Fish": [
-    "Ship Graveyard: Soul of the God's Odd Fish"
+    "SG: Soul of the God's Odd Fish"
   ],
   "Mist Sick Clock Tower": [
-    "Sick Clock Tower: Mist Sick Clock Tower"
+    "SCT: Mist Sick Clock Tower"
   ],
   "Mist Slaughterhouse": [
-    "Slaughterhouse: Mist Slaughterhouse"
+    "SH: Mist Slaughterhouse"
   ],
   "Covenant: Shisha": [
     "SF: Covenant: Shisha"
@@ -962,70 +962,70 @@
     "ULT: Mist Upper Lutwidge Town"
   ],
   "Black Knight's Ring": [
-    "White Castletown: Black Knight's Ring"
+    "WCT: Black Knight's Ring"
   ],
   "Counter Ring": [
-    "White Castletown: Counter Ring"
+    "WCT: Counter Ring"
   ],
   "Cross Greatshield": [
-    "White Castletown: Cross Greatshield"
+    "WCT: Cross Greatshield"
   ],
   "Ice Stoneplate Ring": [
-    "White Castletown: Ice Stoneplate Ring"
+    "WCT: Ice Stoneplate Ring"
   ],
   "Lion's Ring": [
-    "White Castletown: Lion's Ring"
+    "WCT: Lion's Ring"
   ],
   "Mist White Castletown": [
-    "White Castletown: Mist White Castletown"
+    "WCT: Mist White Castletown"
   ],
   "Ring of The Indomitable": [
-    "White Castletown: Ring of The Indomitable"
+    "WCT: Ring of The Indomitable"
   ],
   "Sorcery [Piercing Ice Pillars]": [
-    "White Castletown: Sorcery [Piercing Ice Pillars]"
+    "WCT: Sorcery [Piercing Ice Pillars]"
   ],
   "Sorcery [Ruinous Arrow Rain]": [
-    "White Castletown: Sorcery [Ruinous Arrow Rain]"
+    "WCT: Sorcery [Ruinous Arrow Rain]"
   ],
   "Soul of the Winterbell's Wind": [
-    "White Castletown: Soul of the Winterbell's Wind"
+    "WCT: Soul of the Winterbell's Wind"
   ],
   "Unicorn's Ring": [
-    "White Castletown: Unicorn's Ring"
+    "WCT: Unicorn's Ring"
   ],
   "Winter Warrior's Helm": [
-    "White Castletown: Winter Warrior's Helm"
+    "WCT: Winter Warrior's Helm"
   ],
   "Winter Warrior's Plate": [
-    "White Castletown: Winter Warrior's Plate"
+    "WCT: Winter Warrior's Plate"
   ],
   "Winter Witch's Coat": [
-    "White Castletown: Winter Witch's Coat"
+    "WCT: Winter Witch's Coat"
   ],
   "Covenant: Sho": [
-    "Windless Valley: Covenant: Sho"
+    "WV: Covenant: Sho"
   ],
   "Mist Windless Valley": [
-    "Windless Valley: Mist Windless Valley"
+    "WV: Mist Windless Valley"
   ],
   "Old King's Ring": [
-    "Winterbell: Old King's Ring"
+    "WB: Old King's Ring"
   ],
   "Polar Bear's Ring": [
-    "Winterbell: Polar Bear's Ring"
+    "WB: Polar Bear's Ring"
   ],
   "Sorcery [Serpent's Embrace]": [
-    "Winterbell: Sorcery [Serpent's Embrace]"
+    "WV: Sorcery [Serpent's Embrace]"
   ],
   "Sorcery [Soul Stream]": [
-    "Winterbell: Sorcery [Soul Stream]"
+    "WB: Sorcery [Soul Stream]"
   ],
   "Soul of the White Lion": [
-    "Winterbell: Soul of the White Lion"
+    "WCT: Soul of the White Lion"
   ],
   "Soul of the White Unicorn": [
-    "Winterbell: Soul of the White Unicorn"
+    "WCT: Soul of the White Unicorn"
   ],
   "Sorcery [Omnibless]": [
     "LD: Sorcery [Omnibless] (exchange for Soul of the Dean)"
@@ -1050,5 +1050,8 @@
   ],
   "Sorcery [Heavy Soul Discharge]": [
     "LD: Sorcery [Heavy Soul Discharge] (exchange for Soul of the Slave Empress)"
+  ],
+  "Fairy Tale [Peter Pan]": [
+    "SCT: Fairy Tale [Peter Pan]"
   ]
 }
