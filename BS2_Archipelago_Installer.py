@@ -616,9 +616,79 @@ def install_randomizer(game_dir, fmt):
         if zlib.decompress(entries[idx][2]) != new_source:
             raise RuntimeError(f"Final verification failed for overwritten script {target_name!r}.")
 
+    fix_24bit_audio(game_dir)
     extra_files = list(warnings) + copy_archipelago_companion_files(game_dir)
 
     return target_path, backup, extra_files
+
+
+AUDIO_FOLDERS = ("SE", "ME", "BGS", "BGM")
+
+
+def wav_to_16bit(data):
+    if data[:4] != b"RIFF" or data[8:12] != b"WAVE":
+        return None
+    fmt = pcm = None
+    i = 12
+    while i + 8 <= len(data):
+        cid = data[i:i + 4]
+        size = struct.unpack("<I", data[i + 4:i + 8])[0]
+        if cid == b"fmt ":
+            fmt = struct.unpack("<HHIIHH", data[i + 8:i + 24])
+        elif cid == b"data":
+            pcm = data[i + 8:i + 8 + size]
+        i += 8 + size + (size & 1)
+    if not fmt or pcm is None or fmt[0] not in (1, 0xFFFE) or fmt[5] != 24:
+        return None
+    channels, rate = fmt[1], fmt[2]
+    count = len(pcm) // 3
+    samples = [int.from_bytes(pcm[k * 3:k * 3 + 3], "little", signed=True) >> 8 for k in range(count)]
+    # mkxp-z plays 24-bit and 96 kHz audio as a squeal, so halve the rate as well
+    if rate > 48000 and rate % 2 == 0:
+        frames = [samples[k:k + channels] for k in range(0, count - channels + 1, channels)]
+        merged = []
+        for a, b in zip(frames[0::2], frames[1::2]):
+            merged.extend((x + y) // 2 for x, y in zip(a, b))
+        samples, rate = merged, rate // 2
+    body = struct.pack("<%dh" % len(samples), *samples)
+    header = struct.pack("<4sI4s4sIHHIIHH4sI", b"RIFF", 36 + len(body), b"WAVE", b"fmt ", 16, 1, channels,
+                         rate, rate * channels * 2, channels * 2, 16, b"data", len(body))
+    return header + body
+
+
+def fix_24bit_audio(game_dir):
+    fixed = []
+    for folder in AUDIO_FOLDERS:
+        path = os.path.join(game_dir, "Audio", folder)
+        if not os.path.isdir(path):
+            continue
+        for name in os.listdir(path):
+            if not name.lower().endswith(".wav"):
+                continue
+            full = os.path.join(path, name)
+            with open(full, "rb") as f:
+                converted = wav_to_16bit(f.read())
+            if converted is None:
+                continue
+            backup = full + ARCHIVE_BACKUP_SUFFIX
+            if not os.path.isfile(backup):
+                shutil.copy2(full, backup)
+            with open(full, "wb") as f:
+                f.write(converted)
+            fixed.append(os.path.join(folder, name))
+    return fixed
+
+
+def restore_audio(game_dir):
+    for folder in AUDIO_FOLDERS:
+        path = os.path.join(game_dir, "Audio", folder)
+        if not os.path.isdir(path):
+            continue
+        for name in os.listdir(path):
+            if name.endswith(ARCHIVE_BACKUP_SUFFIX):
+                full = os.path.join(path, name)
+                shutil.copy2(full, full[:-len(ARCHIVE_BACKUP_SUFFIX)])
+                os.remove(full)
 
 
 def copy_archipelago_companion_files(game_dir):
@@ -660,6 +730,7 @@ def restore_randomizer(game_dir, fmt):
             raise RuntimeError("The archive backup still contains a randomizer injection; restore was cancelled.")
 
         shutil.copy2(backup, archive_path)
+        restore_audio(game_dir)
         verify = RGSS3AArchive(archive_path)
         ventry = verify.find_entry(SCRIPTS_ENTRY_NAME)
         ventries = load_scripts_bytes(verify.read_entry(ventry))
@@ -679,6 +750,7 @@ def restore_randomizer(game_dir, fmt):
             raise RuntimeError("The Scripts.rvdata2 backup still contains a randomizer injection; restore was cancelled.")
 
         shutil.copy2(backup, rvdata2_path)
+        restore_audio(game_dir)
         with open(rvdata2_path, "rb") as f:
             verify_entries = load_scripts_bytes(f.read())
         if any(is_our_randomizer(e) for e in verify_entries):
