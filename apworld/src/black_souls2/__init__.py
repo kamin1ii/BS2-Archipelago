@@ -6,6 +6,7 @@ from .Locations import LOCATION_TABLE, LOCATION_NAME_TO_ID, VICTORY_LOCATION
 from . import Regions
 from .Regions import create_regions as _create_regions
 from .Options import BS2Options
+from .Shuffle import BOSSES, ENEMIES
 
 class BS2Web(WebWorld):
     theme = "grass"                                 
@@ -543,8 +544,31 @@ class BS2World(World):
                 return name
         return next(iter(ITEM_TABLE))
 
+    def shuffle_troops(self, pool: list, scale: bool) -> list:
+        if not self.options.dlc_enabled:
+            pool = [t for t in pool if not t["dlc"]]
+        placed = pool[:]
+        self.random.shuffle(placed)
+        swaps = []
+        for slot, troop in zip(pool, placed):
+            if slot["troop"] == troop["troop"]:
+                continue
+            hp, atk = 1.0, 1.0
+            if scale:
+                hp = max(0.05, min(20.0, slot["hp"] / troop["hp"]))
+                atk = max(0.1, min(10.0, slot["atk"] / max(troop["atk"], 1)))
+            swaps.append([slot["troop"], troop["troop"], round(hp, 4), round(atk, 4)])
+        return swaps
+
     def fill_slot_data(self) -> dict:
+        boss_swaps = self.shuffle_troops(BOSSES, bool(self.options.boss_scaling)) if self.options.boss_shuffle else []
+        enemy_swaps = self.shuffle_troops(ENEMIES, True) if self.options.enemy_shuffle else []
         return {
+            "boss_shuffle": bool(self.options.boss_shuffle.value),
+            "enemy_shuffle": bool(self.options.enemy_shuffle.value),
+            "boss_troops": [b["troop"] for b in BOSSES],
+            "boss_swaps": boss_swaps,
+            "enemy_swaps": enemy_swaps,
             "goal": self.options.goal.current_key,
             "death_link": bool(self.options.death_link.value),
             "auto_meet_red_hood": bool(self.options.auto_meet_red_hood.value),

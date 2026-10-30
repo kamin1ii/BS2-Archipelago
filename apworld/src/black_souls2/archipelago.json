@@ -1,8 +1,13 @@
 {
   "game": "black_souls2",
   "minimum_ap_version": "0.6.7",
-  "world_version": "0.3.0",
-  "authors": ["CthulhusShoes", "MayruhiShiinamiya", "SpearOfLies"],
+  "world_version": "0.3.1",
+  "authors": [
+    "CthulhusShoes",
+    "MayruhiShiinamiya",
+    "SpearOfLies",
+    "kamin1ii"
+  ],
   "version": 7,
   "compatible_version": 7
 }

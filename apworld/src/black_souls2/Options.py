@@ -80,6 +80,23 @@ class Goal(Choice):
     default = 0
 
 
+class BossShuffle(DefaultOnToggle):
+    """On by default. Shuffles which boss you fight in each boss arena. Boss souls and checks stay tied to the arena,
+    so story progress is unchanged."""
+    display_name = "Boss Shuffle"
+
+
+class BossScaling(DefaultOnToggle):
+    """On by default. Scales a shuffled boss so its HP and damage match the boss that normally lives in that arena."""
+    display_name = "Boss Scaling"
+
+
+class EnemyShuffle(Toggle):
+    """Off by default. Shuffles the regular enemy groups, scaled to the group they replace.
+    These settings replace the installer's old enemy randomization. With both shuffles off every fight is vanilla."""
+    display_name = "Enemy Shuffle"
+
+
 @dataclass
 class BS2Options(PerGameCommonOptions):
     death_link: DeathLink
@@ -95,3 +112,6 @@ class BS2Options(PerGameCommonOptions):
     ring_link: RingLink
     ring_link_gold_per_ring: RingLinkGoldPerRing
     goal: Goal
+    boss_shuffle: BossShuffle
+    boss_scaling: BossScaling
+    enemy_shuffle: EnemyShuffle
