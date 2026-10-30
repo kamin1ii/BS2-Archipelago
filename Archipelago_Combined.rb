@@ -2751,6 +2751,7 @@ end
             # Off by default (matching the YAML option's own default) if
             # somehow missing from slot_data.
             $ap_start_with_run_like_dodo = slot_data.key?("start_with_run_like_dodo") ? slot_data["start_with_run_like_dodo"] == true : false
+            BS2TroopShuffle.load_slot_data(slot_data)
             if $ap_death_link_enabled && !$ap_tags.include?("DeathLink")
                 $ap_tags << "DeathLink"
                 connect_update_packet = [{
@@ -3015,3 +3016,108 @@ end
         end
     end
     Scene_Map.prepend(BS2_FogReturn_SceneMap)
+
+
+#==============================================================================
+# Boss and enemy shuffle from the Archipelago slot data
+#==============================================================================
+module BS2TroopShuffle
+    @active = false
+    @boss_troops = {}
+    @swaps = {}
+
+    def self.load_slot_data(slot_data)
+        @active = slot_data.key?("boss_shuffle")
+        @boss_troops = {}
+        (slot_data["boss_troops"] || []).each { |id| @boss_troops[id.to_i] = true }
+        @swaps = {}
+        ((slot_data["boss_swaps"] || []) + (slot_data["enemy_swaps"] || [])).each do |slot, troop, hp, atk|
+            @swaps[slot.to_i] = [troop.to_i, hp.to_f, atk.to_f]
+        end
+    end
+
+    def self.active?
+        @active
+    end
+
+    def self.swap(troop_id)
+        @swaps[troop_id]
+    end
+
+    def self.boss?(troop_id)
+        @boss_troops[troop_id]
+    end
+end
+
+class Game_Interpreter
+    alias bs2ts_command_301 command_301
+    def command_301
+        return bs2ts_command_301 unless BS2TroopShuffle.active?
+        $ap_pending_arena_soul_troop_id = nil
+        return bs2r4_command_301 if $game_party.in_battle || BS2Randomizer.intro_map?(self)
+        $ap_shuffle_scale = nil
+        original_id = BS2Randomizer.original_troop_id(self)
+        $ap_shuffle_original_troop = BS2TroopShuffle.boss?(original_id) ? original_id : nil
+        swap = original_id > 0 ? BS2TroopShuffle.swap(original_id) : nil
+        return bs2r4_command_301 unless swap
+        $ap_shuffle_scale = [swap[1], swap[2]]
+        original = @params
+        @params = [0, swap[0], @params[2], @params[3]]
+        begin
+            bs2r4_command_301
+        ensure
+            @params = original
+        end
+    end
+end
+
+class Game_Player < Game_Character
+    alias bs2ts_make_encounter_troop_id make_encounter_troop_id
+    def make_encounter_troop_id
+        troop_id = bs2ts_make_encounter_troop_id
+        swap = BS2TroopShuffle.active? ? BS2TroopShuffle.swap(troop_id) : nil
+        return troop_id unless swap
+        $ap_shuffle_scale = [swap[1], swap[2]]
+        swap[0]
+    end
+end
+
+class Game_Enemy < Game_Battler
+    alias bs2ts_param_base param_base
+    def param_base(param_id)
+        value = bs2ts_param_base(param_id)
+        scale = $ap_shuffle_scale
+        return value unless scale
+        case param_id
+        when 0 then [(value * scale[0]).to_i, 1].max
+        when 2, 3, 4, 5 then [(value * scale[1]).to_i, 1].max
+        else value
+        end
+    end
+end
+
+module BattleManager
+    class << self
+        alias bs2ts_process_victory process_victory
+        def process_victory
+            original = $ap_shuffle_original_troop
+            return bs2ts_process_victory unless original && $game_troop
+            # boss souls belong to the arena, so report the arena's own boss
+            fought = $game_troop.instance_variable_get(:@troop_id)
+            $game_troop.instance_variable_set(:@troop_id, original)
+            begin
+                bs2ts_process_victory
+            ensure
+                $game_troop.instance_variable_set(:@troop_id, fought)
+            end
+        end
+
+        alias bs2ts_battle_end battle_end
+        def battle_end(result)
+            bs2ts_battle_end(result)
+            $ap_shuffle_scale = nil
+            $ap_shuffle_original_troop = nil
+        end
+    end
+end
+
