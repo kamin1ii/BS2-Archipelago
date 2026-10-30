@@ -13,6 +13,7 @@ Fork of [cthulhusshoes/BS2-Archipelago](https://github.com/cthulhusshoes/BS2-Arc
 - Fixed Prickett giving her ring on every visit after the Prickett's Ring fix
 - Fixed the Tyrant Ring check never being sent if you already had the ring from Archipelago
 - Fixed the Cheeky Oyster quest never ending when non-AP item shuffle swapped the 99 Polluted Fish she gives you
+- Non-AP item shuffle no longer moves quest items that later events check for (Bunny Suit, Preserved Viscera, Vestibule Key, Rabbit Key, Turtle Soup, Unseen Pepper and the Duchess' meats, Carnacki's Notebook, Fairy Tale [The Snow Girl]). Before this they could end up anywhere in the region and block the Black Rabbit of Inaba and Whittled Ring checks, the Liddell house and rabbit land
 - The installer converts the three 24-bit WAV files (the kiss sound, the Infinite Food and little river ambience) to 16-bit, which fixes the high-pitched squeal. The originals are kept as backups and Restore puts them back
 - Rebuilt the installer exe so it carries the fixed script
 
