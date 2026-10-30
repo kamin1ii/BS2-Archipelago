@@ -1,3 +1,20 @@
+# Black Souls 2 Archipelago (kamin1ii fork)
+
+Fork of [cthulhusshoes/BS2-Archipelago](https://github.com/cthulhusshoes/BS2-Archipelago) Beta v7 with these changes.
+
+- Boss Shuffle (on by default) swaps which boss you fight in each boss arena, scaled to the arena. Boss souls and fairy tales still come from the arena, so progress is unchanged
+- Enemy Shuffle (off by default) swaps the regular enemy groups, scaled to the group they replace
+- Both options replace the installer's old enemy randomization when you connect to Archipelago
+- Fixed 58 location names that never matched the apworld, so those checks were never sent
+- Fixed Fairy Tale [Peter Pan] never being sent after the Jubjub fight
+- Fixed Drink Me and Eat Me never sending their checks, and their pickups vanishing while you hold the item
+- Fixed Griffy vanishing from the Fox and the Grapes arena after the Ripon Cathedral scene with Bill
+- Rebuilt the installer exe so it carries the fixed script
+
+Setup is the same as below. Use this fork's apworld, yaml and installer together.
+
+---
+
 Installer for Black Souls 2 archipelago integration.
 
 Should work with all versions, including steam (though achievements will be disabled).
