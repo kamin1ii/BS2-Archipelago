@@ -32,9 +32,9 @@ description: Default black_souls2 Template
 
 game: black_souls2
 requires:
-  version: 0.6.7 # Version of Archipelago required for this yaml to work as expected.
+  version: 0.6.9 # Version of Archipelago required for this yaml to work as expected.
   game:
-    black_souls2: 0.3.0 # Version of the world required for this yaml to work as expected.
+    black_souls2: 0.3.1 # Version of the world required for this yaml to work as expected.
 
 black_souls2:
   ################
@@ -150,6 +150,23 @@ black_souls2:
     common_endings: 0
     ending_f: 0
 
+  boss_shuffle:
+    # On by default. Shuffles which boss you fight in each boss arena. Boss souls and checks stay tied to the arena,
+    # so story progress is unchanged.
+    'false': 0
+    'true': 50
+
+  boss_scaling:
+    # On by default. Scales a shuffled boss so its HP and damage match the boss that normally lives in that arena.
+    'false': 0
+    'true': 50
+
+  enemy_shuffle:
+    # Off by default. Shuffles the regular enemy groups, scaled to the group they replace.
+    # These settings replace the installer's old enemy randomization. With both shuffles off every fight is vanilla.
+    'false': 50
+    'true': 0
+
   ###########################
   # Item & Location Options #
   ###########################
@@ -162,7 +179,7 @@ black_souls2:
     []
 
   start_inventory:
-    # Start with the specified amount of these items. Example: "Bomb: 1"
+    # Start with the specified amount of these items. Example: {Bomb: 1, Arrow: 3}
     {}
 
   start_hints:
