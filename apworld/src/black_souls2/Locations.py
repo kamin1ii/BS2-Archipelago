@@ -410,6 +410,8 @@ LOCATION_TABLE = {
     'BS2: Red Hood Met 9': LocationData(396600389, 'Library Dream'),
     'BS2: Red Hood Met 10': LocationData(396600390, 'Library Dream'),
     'LD: Ending G Obtainable': LocationData(396600391, 'Library Dream'),
+    'DM: Covenant: Margaret': LocationData(396600392, "Duchess' Mansion"),
+    'CR: Covenant: Jabberwock': LocationData(396600393, 'Carroll River'),
 }
 
 LOCATION_NAME_TO_ID = {name: data.code for name, data in LOCATION_TABLE.items() if data.code is not None}

@@ -448,6 +448,8 @@ LOCATION_RULE_SRC = {
     "WCT: Winter Warrior's Plate": None,
     "WCT: Winter Witch's Coat": None,
     'WV: Covenant: Sho': None,
+    'DM: Covenant: Margaret': 'state.has("Mist Duchess\' Mansion", player)',
+    'CR: Covenant: Jabberwock': '(state.has(\'Mist Riverside\', player) and state.has("Mist Jabberwock\'s Lair", player))',
     'WV: Mist Windless Valley': None,
     "WB: Old King's Ring": None,
     "WB: Polar Bear's Ring": None,

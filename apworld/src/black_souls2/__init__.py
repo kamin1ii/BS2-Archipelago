@@ -344,7 +344,7 @@ class BS2World(World):
             "Covenant: Mock Turtle", "Covenant: Walrus",
             "Covenant: Queen of Hearts", "Covenant: Hatta", "Covenant: Maid Victoria",
             "Covenant: Best Girl Prickett", "Covenant: Kuti", "Covenant: Bandersnatch",
-            "Covenant: Sho",
+            "Covenant: Sho", "Covenant: Margaret", "Covenant: Jabberwock",
         ]
 
                                                                  
