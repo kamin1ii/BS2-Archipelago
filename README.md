@@ -9,6 +9,11 @@ Fork of [cthulhusshoes/BS2-Archipelago](https://github.com/cthulhusshoes/BS2-Arc
 - Fixed Fairy Tale [Peter Pan] never being sent after the Jubjub fight
 - Fixed Drink Me and Eat Me never sending their checks, and their pickups vanishing while you hold the item
 - Fixed Griffy vanishing from the Fox and the Grapes arena after the Ripon Cathedral scene with Bill
+- Added Covenant: Margaret and Covenant: Jabberwock items and checks. Only the covenant choice is gated, so both can still be fought without the item
+- Fixed Prickett giving her ring on every visit after the Prickett's Ring fix
+- Fixed the Tyrant Ring check never being sent if you already had the ring from Archipelago
+- Fixed the Cheeky Oyster quest never ending when non-AP item shuffle swapped the 99 Polluted Fish she gives you
+- The installer converts the three 24-bit WAV files (the kiss sound, the Infinite Food and little river ambience) to 16-bit, which fixes the high-pitched squeal. The originals are kept as backups and Restore puts them back
 - Rebuilt the installer exe so it carries the fixed script
 
 Setup is the same as below. Use this fork's apworld, yaml and installer together.
